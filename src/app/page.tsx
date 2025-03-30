@@ -1,103 +1,135 @@
+"use client";
+
+import React from "react";
+import ZodiacSignsCarousel from "./components/ZodiacSignsCarousel";
+import CalendarHeader from "./components/calendarHeader";
+import Festivals from "./components/festivals";
+import Hinducalendar from "./components/hinduCalendar";
+import PanchaangDetails from "./components/panchangDetails";
+import IndianPanchaang from "./components/indianPanchaang";
+import LunarMonth from "./components/lunarMonthList";
+import Footer from "./components/footer";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeButton, setActiveButton] = useState("");
+  const [currentImage, setCurrentImage] = useState("/panchaang.png");
+
+  useEffect(() => {
+    const updateImage = () => {
+      if (window.innerWidth < 768) {
+        setCurrentImage("/Placeholder.png");
+      } else {
+        setCurrentImage("/panchaang.png");
+      }
+    };
+
+    updateImage(); 
+
+    window.addEventListener("resize", updateImage); 
+
+    return () => {
+      window.removeEventListener("resize", updateImage); 
+    };
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleClick = (buttonName: string) => {
+    setActiveButton(buttonName);
+    setIsMenuOpen(false);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <>
+      <header className="relative bg-[#fae6b8] px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="md:hidden order-first">
+            <button
+              onClick={toggleMenu}
+              className="text-[#8B4513] focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-center flex-grow md:flex-grow-0">
+            <Image
+              src="/Ghar-Mandir-logo_vFINAL 1.png"
+              alt="Ghar Mandir Logo"
+              width={269}
+              height={84}
+              className="h-20 w-64"
+            />
+          </div>
+
+          <div className="md:hidden w-6"></div>
+          <nav
+            className={`fixed inset-0 bg-[#fae6b8] z-50 flex flex-col items-center justify-center
+            md:static md:flex md:flex-row md:space-x-2 md:bg-transparent md:z-auto 
+            ${isMenuOpen ? "block" : "hidden"}
+          `}
+          >
+            <button
+              onClick={toggleMenu}
+              className="md:hidden absolute top-4 right-4 text-[#8B4513]"
+              aria-label="Close menu"
+            >
+              <X size={24} />
+            </button>
+
+            {[
+              { name: "Home", link: "/" },
+              { name: "Upcoming Chadawa", link: "/upcoming-chadawa" },
+              { name: "Upcoming Puja", link: "/upcoming-puja" },
+              { name: "Panchang", link: "/panchang" },
+              { name: "VIP Puja", link: "/vip-puja" },
+              { name: "At Home Guided Pujas", link: "/guided-pujas" },
+            ].map((item) => (
+              <Link
+                key={item.name}
+                href={item.link}
+                className={`px-3 py-2 rounded-md text-lg font-medium transition-all
+                  ${
+                    activeButton === item.name
+                      ? "bg-[#b75500] text-white scale-105"
+                      : "text-[#00000] hover:bg-[#b75500] hover:text-white"
+                  }`}
+                onClick={() => handleClick(item.name)}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <div className="relative w-full mt-[10px]">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src={currentImage}
+          alt="Full-screen Background"
+          width={1920}
+          height={800}
+          className="w-full h-200px"
           priority
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+      <ZodiacSignsCarousel />
+      <CalendarHeader />
+      <Festivals />
+      <Hinducalendar />
+      <PanchaangDetails />
+      <IndianPanchaang />
+      <LunarMonth />
+      <Footer />
+    </>
   );
 }
